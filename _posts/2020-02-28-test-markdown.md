@@ -15,9 +15,9 @@ Sin embargo, la aventura no termina aquí. Nuestro siguiente objetivo será esca
 MonitorsTwo es un desafío estimulante que combina habilidades de explotación de vulnerabilidades, enumeración de bases de datos y conocimientos de Docker. A medida que progresamos en esta máquina, aprenderemos valiosas lecciones sobre seguridad informática y ampliaremos nuestra experiencia en el campo del hacking ético.
 
 ¡Prepárate para sumergirte en MonitorsTwo y desbloquear las etapas de esta emocionante misión!
-**Here is some bold text**
 
-## Here is a secondary heading
+## Enumeración
+## Escaneo de puertos
 
 Here's a useless table:
 
