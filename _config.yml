@@ -21,9 +21,7 @@ author: Zelaya420
 
 navbar-links:
   Sobre mi: "sobremi"
-  maquinas:
-    - Beautiful Jekyll: "https://beautifuljekyll.com"
-    - Learn markdown: "https://www.markdowntutorial.com/"
+  Maquinas: "maquina"
   Author's home: "https://deanattali.com"
 
 ################
