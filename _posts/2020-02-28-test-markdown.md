@@ -26,24 +26,21 @@ En cuanto a una aplicación específica, un ejemplo podría ser Nmap. Nmap es un
 
 Es importante destacar que el escaneo de puertos se utiliza con fines legítimos, como auditorías de seguridad o pruebas de penetración autorizadas. Se recomienda siempre obtener el consentimiento del propietario del sistema antes de realizar cualquier escaneo o evaluación de seguridad.
 
-
-
-Here's a code chunk:
-
-~~~
-var foo = function(x) {
-  return(x + 5);
-}
-foo(3)
-~~~
-
-And here is the same code with syntax highlighting:
-
 ```javascript
-var foo = function(x) {
-  return(x + 5);
-}
-foo(3)
+❯ nmap -p22,80 -sCV 10.129.188.45 -oN targeted
+Starting Nmap 7.80 ( https://nmap.org ) at 2023-05-02 15:05 CEST
+Nmap scan report for 10.129.188.45
+Host is up (0.051s latency).
+
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 8.2p1 Ubuntu 4ubuntu0.5 (Ubuntu Linux; protocol 2.0)
+80/tcp open  http    nginx 1.18.0 (Ubuntu)
+|_http-server-header: nginx/1.18.0 (Ubuntu)
+|_http-title: Login to Cacti
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 10.23 seconds
 ```
 
 And here is the same code yet again but with line numbers:
