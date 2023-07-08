@@ -10,18 +10,18 @@
 ############################
 
 # Name of website
-title: My Website
+title: Zelaya420
 
 # Your name to show in the footer
-author: Some Person
+author: Zelaya420
 
 ###############################################
 # --- List of links in the navigation bar --- #
 ###############################################
 
 navbar-links:
-  About Me: "aboutme"
-  Resources:
+  Sobre mi: "sobremi"
+  maquinas:
     - Beautiful Jekyll: "https://beautifuljekyll.com"
     - Learn markdown: "https://www.markdowntutorial.com/"
   Author's home: "https://deanattali.com"
