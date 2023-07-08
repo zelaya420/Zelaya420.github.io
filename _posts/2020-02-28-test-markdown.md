@@ -81,3 +81,20 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
 Nmap done: 1 IP address (1 host up) scanned in 10.23 seconds
 ```
+## Intrusión (Docker)
+Si utilizamos la herramienta searchsploit, podemos descubrir que la versión del software que se encuentra en la página web presenta una vulnerabilidad conocida como RCE (Remote Code Execution). Esta vulnerabilidad permite a un atacante ejecutar código de forma remota en el sistema afectado, lo que podría comprometer su seguridad y permitir el acceso no autorizado.
+
+En resumen, la función de searchsploit es buscar y listar exploits conocidos y vulnerabilidades en diferentes software y sistemas. En este caso particular, nos ha permitido identificar que la versión del software en la página web es vulnerable a un RCE. Esta información es valiosa para los profesionales de seguridad informática, ya que les permite estar al tanto de las vulnerabilidades existentes y tomar las medidas necesarias para proteger los sistemas afectados.
+
+```javascript
+❯ searchsploit cacti 1.2.22
+---------------------------------------------------------------------------------------------------------------------- ---------------------------------
+ Exploit Title                                                                                                        |  Path
+---------------------------------------------------------------------------------------------------------------------- ---------------------------------     
+Cacti v1.2.22 - Remote Command Execution (RCE)                                                                        | php/webapps/51166.py
+---------------------------------------------------------------------------------------------------------------------- ---------------------------------
+Shellcodes: No Results
+```
+
+
+
