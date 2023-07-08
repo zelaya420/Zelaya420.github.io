@@ -192,7 +192,7 @@ Es importante tener en cuenta que GTFOBins se utiliza con fines legítimos en pr
 
 En resumen, al buscar en GTFOBins, encontramos una técnica específica que nos permitió obtener acceso de root en el contenedor. Esto nos brinda un mayor control y privilegios sobre el sistema en el que estábamos trabajando, lo que puede ser utilizado para realizar pruebas de seguridad y garantizar la protección del sistema en general.
  
- ##Intrusión (máquina principal)
+ ## Intrusión(máquina principal)
  
 En la raíz del sistema podemos encontrar un script en el que podremos leer un archivo SQL.
 
