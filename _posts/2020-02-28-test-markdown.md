@@ -3,6 +3,7 @@ layout: post
 title: MonitorsTwo – HTB
 subtitle: Clam AV DC DNS Docker Dotnet Firejail JSON JWT Kerberos Latex Injection LFI
 comments: true
+
 ---
 ![MoTwo](https://hyperbeast.es/wp-content/uploads/2023/05/monitorstwo-htb.jpeg)
 
