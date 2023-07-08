@@ -191,5 +191,164 @@ En nuestro caso, al buscar en GTFOBins, encontramos una técnica o método espec
 Es importante tener en cuenta que GTFOBins se utiliza con fines legítimos en pruebas de seguridad y actividades de hacking ético. Proporciona información valiosa para identificar posibles puntos débiles en la configuración del sistema y promover la seguridad informática al parchear o mitigar esas vulnerabilidades.
 
 En resumen, al buscar en GTFOBins, encontramos una técnica específica que nos permitió obtener acceso de root en el contenedor. Esto nos brinda un mayor control y privilegios sobre el sistema en el que estábamos trabajando, lo que puede ser utilizado para realizar pruebas de seguridad y garantizar la protección del sistema en general.
+ 
+ ##Intrusión (máquina principal)
+ 
+En la raíz del sistema podemos encontrar un script en el que podremos leer un archivo SQL.
 
+```javascript
+root@50bca5e748b0:/# ls -l
+ls -l
+total 92
+drwxr-xr-x   1 root root  4096 Mar 22 13:21 bin
+drwxr-xr-x   2 root root  4096 Mar 22 13:21 boot
+drwxr-xr-x   5 root root   340 May  2 12:53 dev
+-rw-r--r--   1 root root   648 Jan  5 11:37 entrypoint.sh
+drwxr-xr-x   1 root root  4096 Mar 21 10:49 etc
+drwxr-xr-x   2 root root  4096 Mar 22 13:21 home
+drwxr-xr-x   1 root root  4096 Nov 15 04:13 lib
+drwxr-xr-x   2 root root  4096 Mar 22 13:21 lib64
+drwxr-xr-x   2 root root  4096 Mar 22 13:21 media
+drwxr-xr-x   2 root root  4096 Mar 22 13:21 mnt
+drwxr-xr-x   2 root root  4096 Mar 22 13:21 opt
+dr-xr-xr-x 279 root root     0 May  2 12:53 proc
+drwx------   1 root root  4096 Mar 21 10:50 root
+drwxr-xr-x   1 root root  4096 Nov 15 04:17 run
+drwxr-xr-x   1 root root  4096 Jan  9 09:30 sbin
+drwxr-xr-x   2 root root  4096 Mar 22 13:21 srv
+dr-xr-xr-x  13 root root     0 May  2 12:53 sys
+drwxrwxrwt   1 root root 20480 May  2 14:11 tmp
+drwxr-xr-x   1 root root  4096 Nov 14 00:00 usr
+drwxr-xr-x   1 root root  4096 Nov 15 04:13 var
+root@50bca5e748b0:/# cat entrypoint.sh
+cat entrypoint.sh
+#!/bin/bash
+set -ex
+
+wait-for-it db:3306 -t 300 -- echo "database is connected"
+if [[ ! $(mysql --host=db --user=root --password=root cacti -e "show tables") =~ "automation_devices" ]]; then
+    mysql --host=db --user=root --password=root cacti < /var/www/html/cacti.sql
+    mysql --host=db --user=root --password=root cacti -e "UPDATE user_auth SET must_change_password='' WHERE username = 'admin'"
+    mysql --host=db --user=root --password=root cacti -e "SET GLOBAL time_zone = 'UTC'"
+fi
+
+chown www-data:www-data -R /var/www/html
+# first arg is <code>-f</code> or <code>--some-option</code>
+if [ "${1#-}" != "$1" ]; then
+        set -- apache2-foreground "$@"
+fi
+
+exec "$@"
+root@50bca5e748b0:/# 
+```
+
+Examinamos la base de datos y descubrimos el hash de la contraseña asociada a un usuario llamado Marcus.
+
+Al mencionar "leer la base de datos", nos referimos a revisar los registros y la información almacenada en la base de datos en busca de datos relevantes. Durante este proceso, encontramos un hash que corresponde a la contraseña del usuario Marcus. Un hash es una representación cifrada de una contraseña u otra información confidencial.
+
+Una vez que hemos obtenido el hash de la contraseña de Marcus, podemos utilizar técnicas de cracking o descifrado para intentar obtener la contraseña en texto plano. Estas técnicas implican el uso de algoritmos y herramientas especializadas para comparar el hash con una lista de posibles contraseñas o aplicar métodos de fuerza bruta para descifrar el hash.
+
+Es importante destacar que el acceso y el uso de datos de la base de datos deben realizarse de manera ética y cumpliendo con las leyes y regulaciones aplicables. Es fundamental obtener el consentimiento adecuado del propietario de la base de datos y utilizar la información de manera responsable y legal.
+
+En resumen, al leer la base de datos, hemos encontrado el hash de la contraseña asociada al usuario Marcus. Esto nos proporciona información valiosa que podemos utilizar para intentar descifrar la contraseña y acceder a la cuenta de Marcus, siempre siguiendo los principios éticos y las regulaciones pertinentes.
+
+```javascript
++----+----------+--------------------------------------------------------------+-------+----------------+------------------------+-----------------------+
+| id | username | password                                                     | realm | full_name      | email_address          | must_change_password | 
+|  4 | marcus   | $2################.3WeKlBn70JonsdW/MhFYK4C |     0 | Marcus Brune   | marcus@monitorstwo.htb |                      |             
++----+----------+--------------------------------------------------------------+-------+----------------+------------------------+-----------------------+
+```
+
+Utilizamos la herramienta John the Ripper para descifrar el hash y obtener la contraseña original.
+
+Cuando mencionamos "desencriptar el hash", nos referimos a aplicar técnicas de cracking o descifrado al hash de la contraseña con el fin de obtener la contraseña en su forma original. John the Ripper es una popular herramienta de descifrado de contraseñas que utiliza diversos métodos, como ataques de diccionario, fuerza bruta y análisis de patrones, para intentar descifrar hashes y recuperar las contraseñas originales.
+
+En nuestro caso, hemos utilizado John the Ripper para procesar el hash que encontramos en la base de datos y realizar un intento de descifrado. La herramienta comparará el hash con una lista de posibles contraseñas, utilizará técnicas de fuerza bruta o aplicará métodos más sofisticados según su configuración y opciones seleccionadas.
+
+Si John the Ripper tiene éxito en descifrar el hash, obtendremos la contraseña original asociada al usuario Marcus. Esta contraseña en texto plano nos permitirá acceder a la cuenta de Marcus y utilizarla con fines legítimos, siempre siguiendo las normas éticas y legales aplicables.
+
+Es importante destacar que el uso de herramientas de descifrado como John the Ripper debe realizarse de manera legal y ética. Es necesario obtener el consentimiento adecuado del propietario de la cuenta o del sistema y utilizar la información obtenida de forma responsable y dentro de los límites legales establecidos.
+
+En resumen, mediante el uso de John the Ripper, hemos aplicado técnicas de descifrado al hash para obtener la contraseña original asociada al usuario Marcus. Este proceso nos permite acceder a la cuenta de Marcus y utilizarla de manera legítima y responsable, siempre cumpliendo con las regulaciones y principios éticos correspondientes.
+
+```javascript
+❯ john --wordlist=/home/mrx/aplicaciones/rockyou.txt hash
+Warning: detected hash type "bcrypt", but the string is also recognized as "bcrypt-opencl"
+Use the "--format=bcrypt-opencl" option to force loading these as that type instead
+Using default input encoding: UTF-8
+Loaded 1 password hash (bcrypt [Blowfish 32/64 X3])
+Cost 1 (iteration count) is 1024 for all loaded hashes
+Will run 16 OpenMP threads
+Press 'q' or Ctrl-C to abort, 'h' for help, almost any other key for status
+fun#####ey      (?)     
+1g 0:00:00:20 DONE (2023-05-02 16:21) 0.04897g/s 423.1p/s 423.1c/s 423.1C/s vectra..beckham7
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed.
+```
+
+Realizamos un intento de conexión a través del protocolo SSH y logramos acceder exitosamente a la cuenta de usuario. Una vez dentro, procedemos a leer la "flag" asociada al usuario.
+
+Al mencionar "conectarnos por SSH", nos referimos al uso del protocolo Secure Shell (SSH) para establecer una conexión segura y remota con el sistema objetivo. SSH proporciona un canal cifrado que permite la autenticación y el acceso a través de una red, generalmente utilizando nombres de usuario y contraseñas o claves de autenticación.
+
+Después de haber autenticado correctamente y obtener acceso a la cuenta de usuario, realizamos la acción de "leer la flag". En este contexto, la "flag" se refiere a un indicador o un archivo que contiene información importante o una cadena de texto específica. Puede ser un archivo oculto o protegido, y su lectura puede ser parte de un desafío o tarea específica dentro del sistema o plataforma en la que estamos trabajando.
+
+Al leer la flag del usuario, obtenemos acceso a esta información confidencial o indicador específico, lo cual puede ser parte de un objetivo, desafío o proceso de recolección de pruebas dentro del contexto de una evaluación de seguridad o un entorno de pruebas controlado.
+
+Es importante destacar que cualquier acceso, lectura o manipulación de información debe realizarse de manera legal, ética y en cumplimiento de las regulaciones y acuerdos de uso aplicables. Se requiere obtener el consentimiento adecuado del propietario del sistema y utilizar la información obtenida de forma responsable y con fines legítimos.
+
+```javascript
+ssh marcus@10.129.188.45
+The authenticity of host '10.129.188.45 (10.129.188.45)' can't be established.
+ED25519 key fingerprint is SHA256:RoZ8jwEnGGByxNt04+A/cdluslAwhmiWqG3ebyZko+A.
+This host key is known by the following other names/addresses:
+    ~/.ssh/known_hosts:28: [hashed name]
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '10.129.188.45' (ED25519) to the list of known hosts.
+marcus@10.129.188.45's password: 
+Welcome to Ubuntu 20.04.6 LTS (GNU/Linux 5.4.0-147-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Tue 02 May 2023 02:22:21 PM UTC
+
+  System load:                      0.0
+  Usage of /:                       63.1% of 6.73GB
+  Memory usage:                     16%
+  Swap usage:                       0%
+  Processes:                        240
+  Users logged in:                  0
+  IPv4 address for br-60ea49c21773: 172.18.0.1
+  IPv4 address for br-7c3b7c0d00b3: 172.19.0.1
+  IPv4 address for docker0:         172.17.0.1
+  IPv4 address for eth0:            10.129.188.45
+  IPv6 address for eth0:            dead:beef::250:56ff:fe96:d93
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+The list of available updates is more than a week old.
+To check for new updates run: sudo apt update
+
+You have mail.
+Last login: Thu Mar 23 10:12:28 2023 from 10.10.14.40
+marcus@monitorstwo:~$ cat user.txt 
+8###################3
+```
+Utilizamos la herramienta LinEnum (también conocida como linpeas) para realizar un análisis exhaustivo del sistema en busca de posibles vías de explotación.
+
+Al mencionar "pasar el linpeas", nos referimos a ejecutar LinEnum en el sistema objetivo. LinEnum es una herramienta de enumeración de Linux que se utiliza para recopilar información detallada sobre la configuración, permisos, servicios y otras características del sistema operativo.
+
+Mediante el análisis del sistema con LinEnum, buscamos identificar posibles puntos débiles, vulnerabilidades o configuraciones inseguras que podrían ser explotadas para obtener acceso no autorizado o comprometer la seguridad del sistema. LinEnum proporciona una lista completa de las configuraciones y servicios que podrían ser objetivos potenciales para los atacantes.
+
+Al ejecutar LinEnum, la herramienta realizará una serie de comprobaciones y análisis, como la revisión de permisos de archivos, la búsqueda de archivos SUID/SGID, la enumeración de usuarios y grupos, y la búsqueda de servicios o programas vulnerables.
+
+El objetivo de utilizar LinEnum es obtener una visión general de la configuración y la seguridad del sistema, identificar posibles brechas o puntos débiles, y así tomar medidas proactivas para fortalecer la seguridad y corregir cualquier problema detectado.
+
+Es importante destacar que el uso de herramientas como LinEnum debe realizarse de manera ética y legal, con el consentimiento adecuado del propietario del sistema y siguiendo las normativas y regulaciones pertinentes. El objetivo principal es mejorar la seguridad y protección del sistema, detectando y corrigiendo posibles vulnerabilidades antes de que puedan ser explotadas por atacantes malintencionados.
 
