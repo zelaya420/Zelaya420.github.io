@@ -161,4 +161,35 @@ hostname -I
 172.19.0.3 
 www-data@50bca5e748b0:/var/www/html$ 
 ```
+Investigamos los permisos SUID y nos resulta interesante el comando capsh.
+
+Cuando hablamos de "mirar los permisos SUID", nos referimos a examinar los archivos y programas que tienen habilitado el bit SUID (Set User ID), lo cual les otorga privilegios especiales cuando son ejecutados por usuarios regulares. Los archivos con permisos SUID permiten a los usuarios ejecutarlos con los privilegios del propietario o del grupo propietario del archivo, en lugar de sus propios privilegios.
+
+Durante nuestra exploración, nos llama la atención específicamente el comando capsh. Este comando es interesante debido a su capacidad para gestionar los atributos de seguridad relacionados con las capacidades del núcleo en sistemas Linux. Las capacidades del núcleo permiten un mayor control y gestión de los privilegios en un sistema operativo.
+
+En resumen, al investigar los permisos SUID, nos centramos en identificar archivos y programas que tienen estos privilegios especiales. En este proceso, nos encontramos con el comando capsh, que es notable por su capacidad para manejar atributos de seguridad y capacidades del núcleo en sistemas Linux. Al prestar atención a este comando, podemos explorar más a fondo sus funcionalidades y comprender cómo puede influir en la seguridad y los privilegios del sistema.
+
+```javascript
+www-data@50bca5e748b0:/var/www/html$ find / -perm -4000 2>/dev/null 
+find / -perm -4000 2>/dev/null
+/usr/bin/gpasswd
+/usr/bin/passwd
+/usr/bin/chsh
+/usr/bin/chfn
+/usr/bin/newgrp
+/sbin/capsh
+/bin/mount
+/bin/umount
+/bin/su
+```
+Realizamos una búsqueda en [GTFOBins](https://gtfobins.github.io/gtfobins/capsh/) y logramos obtener acceso de root en el contenedor.
+
+Cuando mencionamos "buscar en GTFOBins", nos referimos a utilizar esta herramienta que recopila técnicas de escape y aprovechamiento de funcionalidades no seguras en binarios y comandos del sistema operativo. GTFOBins proporciona una lista de estos binarios y comandos junto con ejemplos de cómo utilizarlos para obtener privilegios de root o ejecutar comandos de forma insegura.
+
+En nuestro caso, al buscar en GTFOBins, encontramos una técnica o método específico que nos permitió obtener acceso de root en el contenedor en el que estábamos trabajando. Esta técnica puede involucrar el aprovechamiento de una vulnerabilidad o una funcionalidad poco segura dentro del contenedor, lo que nos da el control total sobre el sistema con privilegios de root.
+
+Es importante tener en cuenta que GTFOBins se utiliza con fines legítimos en pruebas de seguridad y actividades de hacking ético. Proporciona información valiosa para identificar posibles puntos débiles en la configuración del sistema y promover la seguridad informática al parchear o mitigar esas vulnerabilidades.
+
+En resumen, al buscar en GTFOBins, encontramos una técnica específica que nos permitió obtener acceso de root en el contenedor. Esto nos brinda un mayor control y privilegios sobre el sistema en el que estábamos trabajando, lo que puede ser utilizado para realizar pruebas de seguridad y garantizar la protección del sistema en general.
+
 
