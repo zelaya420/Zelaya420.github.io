@@ -1,4 +1,5 @@
 ---
+
 layout: post
 title: MonitorsTwo – HTB
 subtitle: Clam AV DC DNS Docker Dotnet Firejail JSON JWT Kerberos Latex Injection LFI
